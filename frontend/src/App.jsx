@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { MapPin, Search, X, Calendar, ClipboardList, ArrowRight, LogIn, UserPlus, Globe, ShieldCheck } from 'lucide-react';
 
 const API_BASE = 'http://localhost:5000/api';
@@ -63,7 +63,7 @@ const formatINR = (amount) => {
   }).format(amount);
 };
 
-// --- Shared Navbar ---
+// --- Shared Navbar Component ---
 const Navbar = ({ user }) => {
   const location = useLocation();
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
@@ -77,7 +77,9 @@ const Navbar = ({ user }) => {
         <Link to="/explore" style={{ textDecoration: 'none', color: location.pathname === '/explore' ? 'var(--primary)' : 'inherit', fontWeight: 600 }}>Explore</Link>
         <Link to="/bookings" style={{ textDecoration: 'none', color: location.pathname === '/bookings' ? 'var(--primary)' : 'inherit', fontWeight: 600 }}>My Bookings</Link>
         {user ? (
-          <div className="avatar" style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, color: 'white' }}>{user.name[0]}</div>
+          <div className="avatar" title={user.name} style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, color: 'white', cursor: 'pointer' }}>
+            {user.name ? user.name[0].toUpperCase() : 'U'}
+          </div>
         ) : (
           <Link to="/login" className="btn" style={{ textDecoration: 'none', padding: '0.5rem 1.25rem' }}>Login</Link>
         )}
@@ -86,7 +88,7 @@ const Navbar = ({ user }) => {
   );
 };
 
-// --- Home Page ---
+// --- Landing Page Component ---
 const Home = () => {
   return (
     <div className="home-hero">
@@ -105,8 +107,8 @@ const Home = () => {
   );
 };
 
-// --- Auth Components ---
-const Login = ({ onLogin }) => {
+// --- Authentication Components ---
+const LoginPage = ({ onLogin }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
 
@@ -145,7 +147,7 @@ const Login = ({ onLogin }) => {
   );
 };
 
-const Signup = ({ onLogin }) => {
+const SignupPage = ({ onLogin }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
 
@@ -188,7 +190,7 @@ const Signup = ({ onLogin }) => {
   );
 };
 
-// --- Main App with Routing ---
+// --- Main App Component ---
 function App() {
   const [user, setUser] = useState(null);
   const [listings, setListings] = useState([]);
@@ -207,16 +209,24 @@ function App() {
     try {
       const res = await axios.get(`${API_BASE}/listings`);
       setListings(res.data && res.data.length > 0 ? res.data : MOCK_LISTINGS);
-    } catch (err) { setListings(MOCK_LISTINGS); }
-    finally { setLoading(false); }
+    } catch (err) {
+      console.warn("API unavailable, using mock data", err);
+      setListings(MOCK_LISTINGS);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleBooking = async (e) => {
     e.preventDefault();
+    if (!selectedListing) return;
+
     const newBooking = {
-      id: Date.now(), listingTitle: selectedListing.title,
-      total: selectedListing.price * CONVERSION_RATE * bookingData.days,
-      ...bookingData, status: 'Confirmed'
+      id: Date.now(),
+      listingTitle: selectedListing.title,
+      total: selectedListing.price * CONVERSION_RATE * (parseInt(bookingData.days) || 1),
+      ...bookingData,
+      status: 'Confirmed'
     };
 
     try {
@@ -224,9 +234,11 @@ function App() {
         listingId: selectedListing._id,
         ...bookingData
       });
-    } catch (err) { }
+    } catch (err) {
+      console.warn("Booking API error", err);
+    }
 
-    setBookings([newBooking, ...bookings]);
+    setBookings(prev => [newBooking, ...prev]);
     setBookingSuccess(true);
     setTimeout(() => {
       setBookingSuccess(false);
@@ -242,8 +254,8 @@ function App() {
         
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login onLogin={setUser} />} />
-          <Route path="/signup" element={<Signup onLogin={setUser} />} />
+          <Route path="/login" element={<LoginPage onLogin={setUser} />} />
+          <Route path="/signup" element={<SignupPage onLogin={setUser} />} />
           
           <Route path="/explore" element={
             <div className="container">
@@ -251,29 +263,33 @@ function App() {
                 <h1>Find your next adventure</h1>
                 <p>Book unique stays in over 190 countries.</p>
               </header>
-              <div className="grid">
-                {listings.map((listing, idx) => (
-                  <div key={listing._id} className={`card animate-up`} style={{ animationDelay: `${0.1 * (idx + 1)}s` }}>
-                    <img 
-                      src={listing.image} 
-                      alt={listing.title} 
-                      className="card-image" 
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'; }}
-                    />
-                    <div className="card-content">
-                      <h3 className="card-title">{listing.title}</h3>
-                      <div className="card-location"><MapPin size={16} /> {listing.location}</div>
-                      <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem', minHeight: '3em' }}>{listing.description}</p>
-                      <div className="card-footer">
-                        <div className="price">{formatINR(listing.price * CONVERSION_RATE)}<span style={{ fontSize: '0.8rem', fontWeight: 400, color: 'var(--text-muted)' }}> / night</span></div>
-                        <button className="btn" onClick={() => { setSelectedListing(listing); setShowModal(true); }}>Book Now</button>
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '4rem' }}>Loading stays...</div>
+              ) : (
+                <div className="grid">
+                  {listings.map((listing, idx) => (
+                    <div key={listing._id || idx} className="card animate-up" style={{ animationDelay: `${0.1 * (idx + 1)}s` }}>
+                      <img 
+                        src={listing.image} 
+                        alt={listing.title} 
+                        className="card-image" 
+                        onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'; }}
+                      />
+                      <div className="card-content">
+                        <h3 className="card-title">{listing.title}</h3>
+                        <div className="card-location"><MapPin size={16} /> {listing.location}</div>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem', minHeight: '3em' }}>{listing.description}</p>
+                        <div className="card-footer">
+                          <div className="price">{formatINR(listing.price * CONVERSION_RATE)}<span style={{ fontSize: '0.8rem', fontWeight: 400, color: 'var(--text-muted)' }}> / night</span></div>
+                          <button className="btn" onClick={() => { setSelectedListing(listing); setShowModal(true); }}>Book Now</button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )} />
+          } />
 
           <Route path="/bookings" element={
             <div className="container">
@@ -291,7 +307,7 @@ function App() {
               ) : (
                 <div className="grid">
                   {bookings.map((booking, idx) => (
-                    <div key={booking.id} className="card animate-up" style={{ padding: '1.5rem', animationDelay: `${0.1 * (idx + 1)}s` }}>
+                    <div key={booking.id || idx} className="card animate-up" style={{ padding: '1.5rem', animationDelay: `${0.1 * (idx + 1)}s` }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                         <h3 className="card-title" style={{ margin: 0 }}>{booking.listingTitle}</h3>
                         <span style={{ 
@@ -322,7 +338,9 @@ function App() {
                 </div>
               )}
             </div>
-          )} />
+          } />
+          
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 
         {showModal && selectedListing && (
@@ -353,7 +371,7 @@ function App() {
                     </div>
                   </div>
                   <button type="submit" className="btn" style={{ width: '100%', marginTop: '1.5rem', padding: '1rem', fontSize: '1.1rem' }}>
-                    Confirm Reservation — {formatINR(selectedListing.price * CONVERSION_RATE * bookingData.days)} total
+                    Confirm Reservation — {formatINR(selectedListing.price * CONVERSION_RATE * (parseInt(bookingData.days) || 1))} total
                   </button>
                 </form>
               )}
