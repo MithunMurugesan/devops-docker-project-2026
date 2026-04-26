@@ -36,6 +36,9 @@ pipeline {
                 bat 'docker-compose down'
                 bat 'docker-compose up -d'
                 echo 'Application deployed successfully'
+                echo 'Frontend: http://localhost:5175'
+                echo 'Backend: http://localhost:5001'
+                echo 'MongoDB (Host): localhost:27018'
             }
         }
     }
