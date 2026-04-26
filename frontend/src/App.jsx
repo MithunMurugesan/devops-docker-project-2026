@@ -1,18 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import { MapPin, Search, X, Calendar, ClipboardList, ArrowRight, LogIn, UserPlus } from 'lucide-react';
+import { MapPin, Search, X, Calendar, ClipboardList, ArrowRight, LogIn, UserPlus, Globe, ShieldCheck } from 'lucide-react';
 
 const API_BASE = 'http://localhost:5000/api';
 const CONVERSION_RATE = 83;
 
 const MOCK_LISTINGS = [
-  { _id: '1', title: 'Santorini Cliffside Villa', location: 'Santorini, Greece', description: 'Breathtaking views of the Aegean Sea from a luxurious cliffside retreat with a private infinity pool.', price: 420, image: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=600&q=80' },
-  { _id: '2', title: 'Bali Jungle Eco-Lodge', location: 'Ubud, Bali', description: 'A serene escape surrounded by terraced rice fields and tropical greenery, steps from local temples.', price: 185, image: 'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=600&q=80' },
-  { _id: '3', title: 'Tokyo Skyline Penthouse', location: 'Shibuya, Tokyo', description: 'Ultra-modern penthouse with panoramic city views, a rooftop terrace, and smart-home technology.', price: 560, image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80' },
-  { _id: '4', title: 'Swiss Alpine Chalet', location: 'Zermatt, Switzerland', description: 'Cozy wooden chalet with direct Matterhorn views, a hot tub, and ski-in/ski-out access.', price: 680, image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80' },
-  { _id: '5', title: 'Maldives Overwater Bungalow', location: 'North Malé Atoll, Maldives', description: 'Glass-floor bungalow perched above crystal-clear lagoon waters with direct ocean access.', price: 890, image: 'https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=600&q=80' },
-  { _id: '6', title: 'Amalfi Coast Terrace Suite', location: 'Positano, Italy', description: 'Romantic suite with a sun-drenched terrace overlooking the dramatic Italian coastline.', price: 370, image: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=600&q=80' },
+  { 
+    _id: '1', 
+    title: 'Luxury Villa with Ocean View', 
+    location: 'Bali, Indonesia', 
+    description: 'A beautiful villa overlooking the Indian Ocean. Perfect for a relaxing getaway with private pool and sunset views.', 
+    price: 250, 
+    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80' 
+  },
+  { 
+    _id: '2', 
+    title: 'Modern Apartment in Paris', 
+    location: 'Paris, France', 
+    description: 'Experience the romantic city from a stylish apartment. Located in the heart of the city, close to the Eiffel Tower.', 
+    price: 180, 
+    image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80' 
+  },
+  { 
+    _id: '3', 
+    title: 'Cozy Cabin in the Woods', 
+    location: 'Aspen, Colorado', 
+    description: 'Perfect getaway for nature lovers. Enjoy the peace and quiet of the forest in a fully equipped wooden cabin.', 
+    price: 150, 
+    image: 'https://images.unsplash.com/photo-1449156001437-3a1621acbe20?w=600&q=80' 
+  },
+  { 
+    _id: '4', 
+    title: 'Santorini Cliffside Villa', 
+    location: 'Santorini, Greece', 
+    description: 'Breathtaking views of the Aegean Sea from a luxurious cliffside retreat with a private infinity pool.', 
+    price: 420, 
+    image: 'https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=600&q=80' 
+  },
+  { 
+    _id: '5', 
+    title: 'Swiss Alpine Chalet', 
+    location: 'Zermatt, Switzerland', 
+    description: 'Cozy wooden chalet with direct Matterhorn views, a hot tub, and ski-in/ski-out access.', 
+    price: 680, 
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80' 
+  },
+  { 
+    _id: '6', 
+    title: 'Maldives Overwater Bungalow', 
+    location: 'North Malé Atoll, Maldives', 
+    description: 'Glass-floor bungalow perched above crystal-clear lagoon waters with direct ocean access.', 
+    price: 890, 
+    image: 'https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=600&q=80' 
+  },
 ];
 
 const formatINR = (amount) => {
@@ -48,13 +90,16 @@ const Navbar = ({ user }) => {
 const Home = () => {
   return (
     <div className="home-hero">
-      <h1 className="animate-up">Journey Beyond<br/>The Ordinary</h1>
-      <p className="animate-up delay-1">Discover handcrafted stays and unique adventures across the globe. Your next chapter starts here.</p>
-      <div className="cta-group animate-up delay-2">
-        <Link to="/explore" className="btn" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          Start Exploring <ArrowRight size={18} />
+      <div className="animate-up" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontWeight: 600, marginBottom: '1rem', background: 'var(--glass)', padding: '0.5rem 1rem', borderRadius: '2rem', border: '1px solid var(--border)' }}>
+        <Globe size={18} /> Available in 190+ countries
+      </div>
+      <h1 className="animate-up delay-1">Journey Beyond<br/>The Ordinary</h1>
+      <p className="animate-up delay-2">Discover handcrafted stays and unique adventures across the globe. Your next chapter starts here.</p>
+      <div className="cta-group animate-up delay-3">
+        <Link to="/explore" className="btn" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1rem 2rem' }}>
+          Start Exploring <ArrowRight size={20} />
         </Link>
-        <Link to="/signup" className="btn-secondary" style={{ textDecoration: 'none' }}>Join Community</Link>
+        <Link to="/signup" className="btn-secondary" style={{ textDecoration: 'none', padding: '1rem 2rem' }}>Join Community</Link>
       </div>
     </div>
   );
@@ -73,8 +118,11 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-card animate-up">
         <div className="auth-header">
+          <div style={{ width: '60px', height: '60px', borderRadius: '1rem', background: 'var(--glass)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'var(--primary)' }}>
+            <LogIn size={30} />
+          </div>
           <h2>Welcome Back</h2>
           <p>Login to manage your bookings</p>
         </div>
@@ -109,8 +157,11 @@ const Signup = ({ onLogin }) => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-card animate-up">
         <div className="auth-header">
+          <div style={{ width: '60px', height: '60px', borderRadius: '1rem', background: 'var(--glass)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'var(--primary)' }}>
+            <UserPlus size={30} />
+          </div>
           <h2>Create Account</h2>
           <p>Join StaySphere today</p>
         </div>
@@ -167,6 +218,14 @@ function App() {
       total: selectedListing.price * CONVERSION_RATE * bookingData.days,
       ...bookingData, status: 'Confirmed'
     };
+
+    try {
+      await axios.post(`${API_BASE}/bookings`, {
+        listingId: selectedListing._id,
+        ...bookingData
+      });
+    } catch (err) { }
+
     setBookings([newBooking, ...bookings]);
     setBookingSuccess(true);
     setTimeout(() => {
@@ -188,20 +247,25 @@ function App() {
           
           <Route path="/explore" element={
             <div className="container">
-              <header className="hero">
+              <header className="hero animate-up">
                 <h1>Find your next adventure</h1>
                 <p>Book unique stays in over 190 countries.</p>
               </header>
               <div className="grid">
-                {listings.map(listing => (
-                  <div key={listing._id} className="card">
-                    <img src={listing.image} alt={listing.title} className="card-image" />
+                {listings.map((listing, idx) => (
+                  <div key={listing._id} className={`card animate-up`} style={{ animationDelay: `${0.1 * (idx + 1)}s` }}>
+                    <img 
+                      src={listing.image} 
+                      alt={listing.title} 
+                      className="card-image" 
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'; }}
+                    />
                     <div className="card-content">
                       <h3 className="card-title">{listing.title}</h3>
                       <div className="card-location"><MapPin size={16} /> {listing.location}</div>
-                      <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>{listing.description}</p>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem', minHeight: '3em' }}>{listing.description}</p>
                       <div className="card-footer">
-                        <div className="price">{formatINR(listing.price * CONVERSION_RATE)}<span> / night</span></div>
+                        <div className="price">{formatINR(listing.price * CONVERSION_RATE)}<span style={{ fontSize: '0.8rem', fontWeight: 400, color: 'var(--text-muted)' }}> / night</span></div>
                         <button className="btn" onClick={() => { setSelectedListing(listing); setShowModal(true); }}>Book Now</button>
                       </div>
                     </div>
@@ -213,29 +277,44 @@ function App() {
 
           <Route path="/bookings" element={
             <div className="container">
-              <header className="hero" style={{ padding: '2rem 0' }}>
+              <header className="hero animate-up" style={{ padding: '2rem 0' }}>
                 <h1>My Bookings</h1>
                 <p>View and manage your upcoming stays.</p>
               </header>
               {bookings.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '4rem', background: 'var(--card-bg)', borderRadius: '2rem' }}>
+                <div className="animate-up delay-1" style={{ textAlign: 'center', padding: '4rem', background: 'var(--card-bg)', borderRadius: '2rem', border: '1px solid var(--border)' }}>
                   <ClipboardList size={48} style={{ marginBottom: '1rem', opacity: 0.5 }} />
                   <h3>No bookings yet</h3>
-                  <Link to="/explore" className="btn" style={{ marginTop: '1.5rem', textDecoration: 'none', display: 'inline-block' }}>Explore Now</Link>
+                  <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Start exploring destinations to book your first stay!</p>
+                  <Link to="/explore" className="btn" style={{ textDecoration: 'none', display: 'inline-block' }}>Explore Now</Link>
                 </div>
               ) : (
                 <div className="grid">
-                  {bookings.map(booking => (
-                    <div key={booking.id} className="card" style={{ padding: '1.5rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                        <h3 className="card-title">{booking.listingTitle}</h3>
-                        <span style={{ padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.75rem', background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80' }}>{booking.status}</span>
+                  {bookings.map((booking, idx) => (
+                    <div key={booking.id} className="card animate-up" style={{ padding: '1.5rem', animationDelay: `${0.1 * (idx + 1)}s` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                        <h3 className="card-title" style={{ margin: 0 }}>{booking.listingTitle}</h3>
+                        <span style={{ 
+                          padding: '0.25rem 0.75rem', 
+                          borderRadius: '1rem', 
+                          fontSize: '0.75rem', 
+                          fontWeight: 600,
+                          background: 'rgba(34, 197, 94, 0.2)', 
+                          color: '#4ade80',
+                          border: '1px solid rgba(34, 197, 94, 0.2)'
+                        }}>
+                          <ShieldCheck size={12} style={{ marginRight: '4px', display: 'inline' }} />
+                          {booking.status}
+                        </span>
                       </div>
                       <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Calendar size={14} /> {booking.date} ({booking.days} {booking.days === 1 ? 'day' : 'days'})</div>
-                        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}>
-                          <span>Total Amount</span>
-                          <span style={{ color: 'var(--text)', fontWeight: 700 }}>{formatINR(booking.total)}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                          <Calendar size={14} /> 
+                          {booking.date} ({booking.days} {booking.days === 1 ? 'day' : 'days'})
+                        </div>
+                        <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>Total Amount Paid</span>
+                          <span style={{ color: 'var(--text)', fontWeight: 700, fontSize: '1.1rem' }}>{formatINR(booking.total)}</span>
                         </div>
                       </div>
                     </div>
@@ -248,25 +327,34 @@ function App() {
 
         {showModal && selectedListing && (
           <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
-            <div className="modal">
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
+            <div className="modal animate-up">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h2>Complete Booking</h2>
-                <X style={{ cursor: 'pointer' }} onClick={() => setShowModal(false)} />
+                <X style={{ cursor: 'pointer', opacity: 0.7 }} onClick={() => setShowModal(false)} />
               </div>
               {bookingSuccess ? (
                 <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                  <div style={{ fontSize: '3rem' }}>🎉</div>
-                  <h3 style={{ color: 'var(--primary)' }}>Confirmed!</h3>
+                  <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
+                  <h3 style={{ color: 'var(--primary)', fontSize: '1.5rem' }}>Booking Confirmed!</h3>
+                  <p style={{ color: 'var(--text-muted)' }}>Get ready for your stay at {selectedListing.title}</p>
                 </div>
               ) : (
                 <form onSubmit={handleBooking}>
                   <div className="input-group"><label>Property</label><input type="text" value={selectedListing.title} disabled /></div>
-                  <div className="input-group"><label>Your Name</label><input type="text" required value={bookingData.customerName} onChange={e => setBookingData({...bookingData, customerName: e.target.value})} /></div>
+                  <div className="input-group"><label>Your Name</label><input type="text" placeholder="Enter your full name" required value={bookingData.customerName} onChange={e => setBookingData({...bookingData, customerName: e.target.value})} /></div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <div className="input-group"><label>Check-in Date</label><input type="date" required value={bookingData.date} onChange={e => setBookingData({...bookingData, date: e.target.value})} /></div>
-                    <div className="input-group"><label>No. of Days</label><input type="number" min="1" required value={bookingData.days} onChange={e => setBookingData({...bookingData, days: parseInt(e.target.value)})} /></div>
+                    <div className="input-group">
+                      <label>Check-in Date</label>
+                      <input type="date" required value={bookingData.date} min={new Date().toISOString().split('T')[0]} onChange={e => setBookingData({...bookingData, date: e.target.value})} />
+                    </div>
+                    <div className="input-group">
+                      <label>No. of Days</label>
+                      <input type="number" min="1" required value={bookingData.days} onChange={e => setBookingData({...bookingData, days: parseInt(e.target.value) || 1})} />
+                    </div>
                   </div>
-                  <button type="submit" className="btn" style={{ width: '100%', marginTop: '1rem', padding: '1rem' }}>Confirm — {formatINR(selectedListing.price * CONVERSION_RATE * bookingData.days)}</button>
+                  <button type="submit" className="btn" style={{ width: '100%', marginTop: '1.5rem', padding: '1rem', fontSize: '1.1rem' }}>
+                    Confirm Reservation — {formatINR(selectedListing.price * CONVERSION_RATE * bookingData.days)} total
+                  </button>
                 </form>
               )}
             </div>
