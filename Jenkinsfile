@@ -11,7 +11,7 @@ pipeline {
         stage('Build Backend') {
             steps {
                 dir('backend') {
-                    sh 'docker build -t booking-backend:latest .'
+                    bat 'docker build -t booking-backend:latest .'
                 }
             }
         }
@@ -19,7 +19,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'docker build -t booking-frontend:latest .'
+                    bat 'docker build -t booking-frontend:latest .'
                 }
             }
         }
@@ -33,8 +33,8 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'docker-compose down'
-                sh 'docker-compose up -d'
+                bat 'docker-compose down'
+                bat 'docker-compose up -d'
                 echo 'Application deployed successfully'
             }
         }
